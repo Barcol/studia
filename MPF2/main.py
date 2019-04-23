@@ -41,7 +41,10 @@ for number in range(iteration):
     if not D:
         break
     for cell in range(len(array) - 1):
-        array[cell] = ((old_array[cell] * (1 - 2 * D)) + (D * (old_array[cell - 1] + old_array[cell + 1])))
+        if cell != 0:
+            array[cell] = ((old_array[cell] * (1 - 2 * D)) + (D * (old_array[cell - 1] + old_array[cell + 1])))
+        else:
+            array[cell] = ((old_array[cell] * (1 - 2 * D)) + (D * (old_array[cell] + old_array[cell + 1])))
 
     temp_K += time_step * heat_rate
     old_array = array
