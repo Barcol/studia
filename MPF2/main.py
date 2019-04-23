@@ -23,7 +23,7 @@ def create_array(length, value_one, value_two):
 
 
 dx = 0.1
-heat_rate = 2
+heat_rate = 3
 time_step = 0.01
 iteration = 3000
 
