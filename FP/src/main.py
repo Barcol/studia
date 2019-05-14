@@ -70,9 +70,20 @@ def thicken_list(thin_table: pd.DataFrame, start_point: int, end_point: int):
     return thin_table.sort_values("temp")
 
 
-def add_phase_transition(data: pd.DataFrame, t_start: int, t_end: int, function: int):
+def include_transition_heat_rect(data: pd.DataFrame, t_start: int, t_end: int, value: float):
+    for index in range(len(data["temp"])):
+        if t_start <= data["temp"][index]:
+            # print(data["enthalpy"][index])
+            data["enthalpy"].at[index] += (value / (t_end - t_start))
+            # print(data["enthalpy"].at[index])
+            # print("\n\n\n")
+    return data
+
+
+def add_phase_transition(data: pd.DataFrame, t_start: int, t_end: int, function: int, value: float):
     data = thicken_list(data, t_start, t_end)
-    # b bla bla add function to list bla bla
+    data = data.reset_index(drop=True)
+    data = include_transition_heat_rect(data, t_start, t_end, value)
     return data
 
 
@@ -81,11 +92,6 @@ if __name__ == "__main__":
     enthalpy_data_frame = pd.DataFrame({"temp": temp_list, "cp": cp_list})
     repair_types(enthalpy_data_frame)
     enthalpy_data_frame = prepare_enthalpy(enthalpy_data_frame)
-    # print(enthalpy_data_frame)
-    # plt.plot(enthalpy_data_frame["enthalpy"], enthalpy_data_frame["temp"])
-    enthalpy_data_frame = add_phase_transition(enthalpy_data_frame, 100, 200, 1)
-    enthalpy_data_frame.reindex()
-    enthalpy_data_frame.to_csv(r"wyniki.txt")
-    plt.plot(enthalpy_data_frame["enthalpy"], enthalpy_data_frame["temp"])
+    enthalpy_data_frame = add_phase_transition(enthalpy_data_frame, 100, 500, 1, 1000)
+    plt.plot(enthalpy_data_frame["temp"], enthalpy_data_frame["enthalpy"])
     plt.show()
-
