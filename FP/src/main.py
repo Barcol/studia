@@ -47,14 +47,14 @@ def prepare_enthalpy(data):
     return data
 
 
-def interpolate(data: pd.DataFrame, value: int):
-    for index in range(len(data["temp"])):
-        if value > data["temp"][index]:
+def interpolate(temp: pd.Series, data_to_interpolate: pd.Series, value: int):
+    for index in range(len(temp)):
+        if value > temp[index]:
             continue
         else:
-            return (((value-data["temp"][index - 1])
-                     * ((data["cp"][index] - data["cp"][index - 1])
-                        / (data["temp"][index] - data["temp"][index - 1]))) + data["cp"][index - 1])
+            return (((value - temp[index - 1])
+                     * ((data_to_interpolate[index] - data_to_interpolate[index - 1])
+                        / (temp[index] - temp[index - 1]))) + data_to_interpolate[index - 1])
 
 
 def thicken_list(thin_table: pd.DataFrame, start_point: int, end_point: int):
@@ -80,4 +80,10 @@ if __name__ == "__main__":
     plt.plot(enthalpy_data_frame["enthalpy"], enthalpy_data_frame["temp"])
     plt.show()
     thickened_list = add_phase_transition(enthalpy_data_frame, 100, 200, 1)
-    # plt.show()
+    plt.show()
+    print(interpolate(enthalpy_data_frame["temp"], enthalpy_data_frame["cp"], 100))
+    print(interpolate(enthalpy_data_frame["temp"], enthalpy_data_frame["cp"], 200))
+    print(interpolate(enthalpy_data_frame["temp"], enthalpy_data_frame["cp"], 300))
+    print(interpolate(enthalpy_data_frame["temp"], enthalpy_data_frame["enthalpy"], 100))
+    print(interpolate(enthalpy_data_frame["temp"], enthalpy_data_frame["enthalpy"], 200))
+    print(interpolate(enthalpy_data_frame["temp"], enthalpy_data_frame["enthalpy"], 300))
