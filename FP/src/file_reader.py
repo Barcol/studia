@@ -6,7 +6,7 @@ class FileReader:
     def data_prepare(self, file: str):
         temp = []
         cp = []
-        self.txt_reader(file[0], temp, cp)
+        self.txt_reader(file, temp, cp)
         return np.array(temp), np.array(cp)
 
     def txt_reader(self, text_input_path: str, temp: List, cp: List):

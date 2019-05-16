@@ -1,4 +1,4 @@
-from PySide2.QtWidgets import QLabel, QPushButton, QVBoxLayout, QWidget, QFileDialog
+from PySide2.QtWidgets import QLabel, QPushButton, QVBoxLayout, QWidget, QFileDialog, QInputDialog
 from PySide2.QtCore import Slot, Qt
 
 from FP.src.enthalpy_processing import EnthalpyProcessing
@@ -36,9 +36,8 @@ class FPApp(QWidget):
 
     @Slot()
     def read_file(self):
-        self.temp_list, self.cp_list = self.file_r.data_prepare(QFileDialog.getOpenFileName(self, 'Open file',
-                                                                                            "./",
-                                                                                            "Text files (*.txt)"))
+        filename = QFileDialog.getOpenFileName(self, 'Open file',"./","Text files (*.txt)")[0]
+        self.temp_list, self.cp_list = self.file_r.data_prepare(filename)
         self.text.setText("Oblicz wykres entalpi")
 
     @Slot()
@@ -46,8 +45,12 @@ class FPApp(QWidget):
         self.entha_pro.create_data(self.temp_list, self.cp_list)
         self.entha_pro.repair_types(self.entha_pro.show_dataframe())
         self.entha_pro.prepare_enthalpy(self.entha_pro.show_dataframe())
+        t_start, ok = QInputDialog.getInt(self, "Temperatura", "Wpisz wartość temperatury startu przemiany")
+        t_end, ok = QInputDialog.getInt(self, "Temperatura", "Wpisz wartość temperatury końca przemiany")
+        enthalpy, ok = QInputDialog.getInt(self, "Entalpia", "Wpisz wartość entalpi przemiany")
         self.entha_pro.enthalpy_data_frame = self.entha_pro.add_phase_transition(self.entha_pro.enthalpy_data_frame,
-                                                                                 100, 150, 100, self.heat_distributor)
+                                                                                 t_start, t_end, enthalpy, self.heat_distributor)
+
         self.text.setText("Wykres gotowy do pokazania")
 
     @Slot()
