@@ -1,10 +1,20 @@
 import numpy as np
 import pandas as pd
+from typing import List
 
 from FP.src.heat_distribution import HeatDistribution
 
 
 class EnthalpyProcessing:
+    def __init__(self):
+        self.enthalpy_data_frame = None
+
+    def show_dataframe(self):
+        return self.enthalpy_data_frame
+
+    def create_data(self, temp_list: List, cp_list: List):
+        self.enthalpy_data_frame = pd.DataFrame({"temp": temp_list, "cp": cp_list})
+
     @staticmethod
     def repair_types(data: pd.DataFrame):
         for index, value in enumerate(data["temp"]):
@@ -12,8 +22,7 @@ class EnthalpyProcessing:
         for index, value in enumerate(data["cp"]):
             data["cp"][index] = float(value)
 
-    @staticmethod
-    def prepare_enthalpy(data):
+    def prepare_enthalpy(self, data):
         enthalpy = []
         for index in range(len(data["temp"])):
             index = int(index)
@@ -23,7 +32,7 @@ class EnthalpyProcessing:
                 enthalpy.append(enthalpy[index - 1] + (data["temp"][index] - data["temp"][index - 1])
                                 * (data["cp"][index] + data["cp"][index - 1]) * (1 / 2))
         data["enthalpy"] = np.array(enthalpy)
-        return data
+        self.enthalpy_data_frame = data
 
     @staticmethod
     def interpolate(temp: pd.Series, data_to_interpolate: pd.Series, value: int):

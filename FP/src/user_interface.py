@@ -1,37 +1,57 @@
-import matplotlib.pyplot as plt
-import pandas as pd
-import random
-import sys
-
-from PySide2.QtWidgets import (QApplication, QLabel, QPushButton, QVBoxLayout, QWidget)
+from PySide2.QtWidgets import QLabel, QPushButton, QVBoxLayout, QWidget, QFileDialog
 from PySide2.QtCore import Slot, Qt
 
 from FP.src.enthalpy_processing import EnthalpyProcessing
 from FP.src.file_reader import FileReader
 from FP.src.heat_distribution import HeatDistribution
-from FP.src.ploter import Ploter
 
 
 class FPApp(QWidget):
-    def __init__(self):
+    def __init__(self, file_r: FileReader, entha_pro: EnthalpyProcessing, heat_distributor: HeatDistribution, ploter):
         QWidget.__init__(self)
 
-        self.button = QPushButton("Wybieerz plik wejsciowy")
-        self.button2 = QPushButton("Wygeneruj Entalpię!")
-        self.button3 = QPushButton("Pokaż wykres")
-        self.text = QLabel("Jakis TEXT")
+        self.temp_list, self.cp_list = None, None
+
+        self.file_r = file_r
+        self.entha_pro = entha_pro
+        self.heat_distributor = heat_distributor
+        self.ploter = ploter
+
+        self.button_file = QPushButton("Wybieerz plik wejsciowy")
+        self.button_enthalpy = QPushButton("Wygeneruj Entalpię!")
+        self.button_plot = QPushButton("Pokaż wykres")
+        self.text = QLabel("Wybierz plik")
         self.text.setAlignment(Qt.AlignCenter)
 
         self.layout = QVBoxLayout()
         self.layout.addWidget(self.text)
-        self.layout.addWidget(self.button)
-        self.layout.addWidget(self.button2)
-        self.layout.addWidget(self.button3)
+        self.layout.addWidget(self.button_file)
+        self.layout.addWidget(self.button_enthalpy)
+        self.layout.addWidget(self.button_plot)
         self.setLayout(self.layout)
-        self.button.clicked.connect(self.magic)
+
+        self.button_file.clicked.connect(self.read_file)
+        self.button_enthalpy.clicked.connect(self.prepare_enthalpy)
+        self.button_plot.clicked.connect(self.show_plot)
 
     @Slot()
-    def magic(self, entha_pro, enthalpy_data_frame, heat_distributor):
-        enthalpy_data_frame = entha_pro.add_phase_transition(enthalpy_data_frame, 100, 150, 100, heat_distributor)
-        self.ploter.draw_plot(enthalpy_data_frame, "enthalpy")
-        plt.show()
+    def read_file(self):
+        self.temp_list, self.cp_list = self.file_r.data_prepare(QFileDialog.getOpenFileName(self, 'Open file',
+                                                                                            "./",
+                                                                                            "Text files (*.txt)"))
+        self.text.setText("Oblicz wykres entalpi")
+
+    @Slot()
+    def prepare_enthalpy(self):
+        self.entha_pro.create_data(self.temp_list, self.cp_list)
+        self.entha_pro.repair_types(self.entha_pro.show_dataframe())
+        self.entha_pro.prepare_enthalpy(self.entha_pro.show_dataframe())
+        self.entha_pro.enthalpy_data_frame = self.entha_pro.add_phase_transition(self.entha_pro.enthalpy_data_frame,
+                                                                                 100, 150, 100, self.heat_distributor)
+        self.text.setText("Wykres gotowy do pokazania")
+
+    @Slot()
+    def show_plot(self):
+        self.ploter.draw_plot(self.entha_pro.enthalpy_data_frame, "enthalpy")
+        self.text.setText("Wykres wyswietlony w nowym oknie")
+        self.ploter.present_plot()
