@@ -61,5 +61,6 @@ class EnthalpyProcessing:
                              heat_distributer: HeatDistribution):
         data = self.thicken_list(data, t_start, t_end)
         data = data.reset_index(drop=True)
+        data["enthalpy_backup"] = data["enthalpy"]
         data = heat_distributer.distribution_choser(data, t_start, t_end, value)
         return data

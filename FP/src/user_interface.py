@@ -68,6 +68,7 @@ class FPApp(QWidget):
         self.entha_pro.create_data(self.temp_list, self.cp_list)
         self.entha_pro.repair_types(self.entha_pro.show_dataframe())
         self.entha_pro.prepare_enthalpy(self.entha_pro.show_dataframe())
+        self.ploter.draw_plot(self.entha_pro.enthalpy_data_frame, "enthalpy")
         t_start, ok = QInputDialog.getInt(self, "Temperatura", "Wpisz wartość temperatury startu przemiany", value=100,)
         t_end, ok = QInputDialog.getInt(self, "Temperatura", "Wpisz wartość temperatury końca przemiany", value=200)
         enthalpy, ok = QInputDialog.getInt(self, "Entalpia", "Wpisz wartość entalpi przemiany", value=400)
