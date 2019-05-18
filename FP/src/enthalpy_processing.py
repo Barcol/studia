@@ -58,9 +58,9 @@ class EnthalpyProcessing:
         return thin_table.sort_values("temp")
 
     def add_phase_transition(self, data: pd.DataFrame, t_start: int, t_end: int, value: float,
-                             heat_distributer: HeatDistribution):
+                             heat_distributer: HeatDistribution, choose: str):
         data = self.thicken_list(data, t_start, t_end)
         data = data.reset_index(drop=True)
         data["enthalpy_backup"] = data["enthalpy"]
-        data = heat_distributer.distribution_choser(data, t_start, t_end, value)
+        data = heat_distributer.distribution_choser(data, t_start, t_end, value, choose)
         return data
