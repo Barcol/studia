@@ -21,6 +21,7 @@ class FPApp(QWidget):
         self.image_rect = QPixmap("./images/rect.png")
         self.image_sqr = QPixmap("./images/sqr.png")
         self.image_minus_sqr = QPixmap("./images/minus_sqr.png")
+        self.image_smooth = QPixmap("./images/smooth.png")
 
         self.button_file = QPushButton("Wybierz plik wejsciowy")
         self.button_enthalpy = QPushButton("Wygeneruj Entalpię")
@@ -29,7 +30,7 @@ class FPApp(QWidget):
 
         self.slider = QSlider(Qt.Horizontal)
         self.slider.setMinimum(19)
-        self.slider.setMaximum(21)
+        self.slider.setMaximum(22)
         self.slider.setValue(20)
         self.slider.setTickPosition(QSlider.TicksBelow)
         self.slider.setTickInterval(1)
@@ -87,6 +88,10 @@ class FPApp(QWidget):
             self.heat_shape = "minus_sqr"
             self.slider_text.setText("Rozkład odwrotnie kwadratowy")
             self.slider_image.setPixmap(self.image_minus_sqr)
+        if choose == 22:
+            self.heat_shape = "smooth"
+            self.slider_text.setText("Rozkład wygładony")
+            self.slider_image.setPixmap(self.image_smooth)
 
     @Slot()
     def read_file(self):
