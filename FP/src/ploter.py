@@ -11,3 +11,8 @@ class Ploter:
 
     def present_plot(self):
         plt.show()
+
+    def draw_plots(self, data, name, iteration):
+        self.draw_plot(data, name)
+        for index in range(iteration):
+            self.draw_plot(data, name + "_backup" + str(index))

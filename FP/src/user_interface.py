@@ -101,15 +101,15 @@ class FPApp(QWidget):
                           f"\n")
         self.button_enthalpy.setDisabled(False)
         self.slider.setDisabled(False)
+        self.heat_shape = "sqr"
         self.slider_text.setText("Rozkład kwadratowy")
         self.slider_image.setPixmap(self.image_sqr)
-
-    @Slot()
-    def prepare_enthalpy(self):
         self.entha_pro.create_data(self.temp_list, self.cp_list)
         self.entha_pro.repair_types(self.entha_pro.show_dataframe())
         self.entha_pro.prepare_enthalpy(self.entha_pro.show_dataframe())
-        self.ploter.draw_plot(self.entha_pro.enthalpy_data_frame, "enthalpy")
+
+    @Slot()
+    def prepare_enthalpy(self):
         t_start, ok = QInputDialog.getInt(self, "Temperatura", "Wpisz wartość temperatury startu przemiany", value=100)
         t_end, ok = QInputDialog.getInt(self, "Temperatura", "Wpisz wartość temperatury końca przemiany", value=200)
         enthalpy, ok = QInputDialog.getInt(self, "Entalpia", "Wpisz wartość entalpi przemiany", value=400)
@@ -125,11 +125,11 @@ class FPApp(QWidget):
     def save_plot(self):
         data = self.entha_pro.show_dataframe()
         filepath = QFileDialog.getSaveFileName(self, "Zapisz plik csv", "./", "Comma separated value (*.csv)")
-        data.to_csv(fr"{filepath}")
+        data.to_csv(fr"{filepath[0]}")
 
     @Slot()
     def show_plot(self):
-        self.ploter.draw_plot(self.entha_pro.enthalpy_data_frame, "enthalpy")
+        self.ploter.draw_plots(self.entha_pro.enthalpy_data_frame, "enthalpy", self.entha_pro.show_transition_iter)
         self.text.setText("Wykres został wyswietlony w nowym oknie")
         self.ploter.present_plot()
         self.text.setText("Wykres gotowy do pokazania")

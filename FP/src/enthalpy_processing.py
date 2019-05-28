@@ -8,6 +8,7 @@ from FP.src.heat_distribution import HeatDistribution
 class EnthalpyProcessing:
     def __init__(self):
         self.enthalpy_data_frame = None
+        self.transition_iter = 0
 
     def show_dataframe(self):
         return self.enthalpy_data_frame
@@ -54,13 +55,18 @@ class EnthalpyProcessing:
                 cps.append(self.interpolate(thin_table["temp"], thin_table["cp"], temp))
                 enthalpys.append(self.interpolate(thin_table["temp"], thin_table["enthalpy"], temp))
         thin_table = thin_table.append(pd.DataFrame({"temp": temps, "cp": cps, "enthalpy": enthalpys}),
-                                       ignore_index=True)
+                                       ignore_index=True, sort=True)
         return thin_table.sort_values("temp")
+
+    @property
+    def show_transition_iter(self):
+        return self.transition_iter
 
     def add_phase_transition(self, data: pd.DataFrame, t_start: int, t_end: int, value: float,
                              heat_distributer: HeatDistribution, choose: str):
         data = self.thicken_list(data, t_start, t_end)
         data = data.reset_index(drop=True)
-        data["enthalpy_backup"] = data["enthalpy"]
+        data["enthalpy_backup" + str(self.transition_iter)] = data["enthalpy"]
+        self.transition_iter += 1
         data = heat_distributer.distribution_choser(data, t_start, t_end, value, choose)
         return data
