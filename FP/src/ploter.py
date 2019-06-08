@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-import numpy as np
 
 
 class Ploter:
@@ -8,7 +7,7 @@ class Ploter:
         pass
 
     def draw_plot(self, enthalpy_data_frame: pd.DataFrame, column: str):
-        return plt.plot(enthalpy_data_frame["temp"], enthalpy_data_frame[column].fillna(method='ffill'))
+        return plt.plot(enthalpy_data_frame["temp"], enthalpy_data_frame[column].interpolate())
 
     def present_plot(self):
         plt.show()
